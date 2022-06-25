@@ -69,7 +69,7 @@ function renderBoard(board) {
     }
     strHtml += '</tr>';
   }
-  var elMat = document.querySelector('.game-board');
+  const elMat = document.querySelector('.game-board');
   elMat.innerHTML = strHtml;
 }
 
@@ -86,7 +86,6 @@ function cellClicked(elCell) {
   elCell.classList.add('selected');
   gSelectedElCell = elCell;
 
-  // console.log('elCell.id: ', elCell.id);
   var cellCoord = getCellCoord(elCell.id);
   var piece = gBoard[cellCoord.i][cellCoord.j];
 
@@ -115,16 +114,19 @@ function cellClicked(elCell) {
         piece === PAWN_WHITE
       );
       break;
+    case QUEEN_BLACK:
+    case QUEEN_WHITE:
+      possibleCoords = getAllPossibleCoordsQueen(cellCoord);
   }
   markCells(possibleCoords);
 }
 
 function movePiece(elFromCell, elToCell) {
-  var fromCoord = getCellCoord(elFromCell.id);
-  var toCoord = getCellCoord(elToCell.id);
+  const fromCoord = getCellCoord(elFromCell.id);
+  const toCoord = getCellCoord(elToCell.id);
 
   // update the MODEL
-  var piece = gBoard[fromCoord.i][fromCoord.j];
+  const piece = gBoard[fromCoord.i][fromCoord.j];
   gBoard[fromCoord.i][fromCoord.j] = '';
   gBoard[toCoord.i][toCoord.j] = piece;
   // update the DOM
@@ -134,21 +136,21 @@ function movePiece(elFromCell, elToCell) {
 
 function markCells(coords) {
   for (var i = 0; i < coords.length; i++) {
-    var coord = coords[i];
-    var elCell = document.querySelector(`#cell-${coord.i}-${coord.j}`);
+    const coord = coords[i];
+    const elCell = document.querySelector(`#cell-${coord.i}-${coord.j}`);
     elCell.classList.add('mark');
   }
 }
 
 // Gets a string such as:  'cell-2-7' and returns {i:2, j:7}
 function getCellCoord(strCellId) {
-  var parts = strCellId.split('-');
-  var coord = { i: +parts[1], j: +parts[2] };
+  const parts = strCellId.split('-');
+  const coord = { i: +parts[1], j: +parts[2] };
   return coord;
 }
 
 function cleanBoard() {
-  var elTds = document.querySelectorAll('.mark, .selected');
+  const elTds = document.querySelectorAll('.mark, .selected');
   for (var i = 0; i < elTds.length; i++) {
     elTds[i].classList.remove('mark', 'selected');
   }
@@ -163,10 +165,10 @@ function isEmptyCell(coord) {
 }
 
 function getAllPossibleCoordsPawn(pieceCoord, isWhite) {
-  var res = [];
+  const res = [];
 
-  var diff = isWhite ? -1 : 1;
-  var nextCoord = { i: pieceCoord.i + diff, j: pieceCoord.j };
+  let diff = isWhite ? -1 : 1;
+  let nextCoord = { i: pieceCoord.i + diff, j: pieceCoord.j };
   if (isEmptyCell(nextCoord)) res.push(nextCoord);
   else return res;
 
@@ -179,75 +181,73 @@ function getAllPossibleCoordsPawn(pieceCoord, isWhite) {
 }
 
 function getAllPossibleCoordsRook(pieceCoord) {
-  var res = [];
+  const res = [];
   var i = pieceCoord.i - 1;
   // Possible moves to lift rook upwards
   for (var idx = i; i >= 0 && i < 8; i--) {
-    var coord = { i, j: pieceCoord.j };
+    const coord = { i, j: pieceCoord.j };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to lift rook downwards
   i = pieceCoord.i + 1;
   for (var idx = i; i < 8 && i >= 0; i++) {
-    var coord = { i, j: pieceCoord.j };
+    const coord = { i, j: pieceCoord.j };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to lift rook left
   var j = pieceCoord.j - 1;
   for (var idx = j; j < 8 && j >= 0; j--) {
-    var coord = { i: pieceCoord.i, j };
+    const coord = { i: pieceCoord.i, j };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to lift rook right
   j = pieceCoord.j + 1;
   for (var idx = j; j < 8 && j >= 0; j++) {
-    var coord = { i: pieceCoord.i, j };
+    const coord = { i: pieceCoord.i, j };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
-  console.log(res);
   return res;
 }
 
 function getAllPossibleCoordsBishop(pieceCoord) {
-  var res = [];
+  const res = [];
   // Possible moves to shift bishop downwards and diagonal right
   var i = pieceCoord.i - 1;
   for (var idx = pieceCoord.j + 1; i >= 0 && idx < 8; idx++) {
-    var coord = { i: i--, j: idx };
+    const coord = { i: i--, j: idx };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to shift bishop downwards and diagonal left
   i = pieceCoord.i - 1;
   for (var idx = pieceCoord.j - 1; i >= 0 && idx < 8; idx--) {
-    var coord = { i: i--, j: idx };
+    const coord = { i: i--, j: idx };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to shift bishop upwards and diagonal left
   i = pieceCoord.i + 1;
   for (var idx = pieceCoord.j - 1; idx >= 0 && i < 8; idx--) {
-    var coord = { i: i++, j: idx };
+    const coord = { i: i++, j: idx };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
   // Possible moves to shift bishop upwards and diagonal right
   i = pieceCoord.i + 1;
   for (var idx = pieceCoord.j + 1; idx >= 0 && i < 8; idx++) {
-    var coord = { i: i++, j: idx };
+    const coord = { i: i++, j: idx };
     if (!isEmptyCell(coord)) break;
     res.push(coord);
   }
-  console.log(res);
   return res;
 }
 
 function getAllPossibleCoordsKnight(pieceCoord) {
-  var res = [];
+  const res = [];
   for (let i = pieceCoord.i - 2; i < pieceCoord.i + 3; i++) {
     if (i - 1 < 0 || i + 1 > 8) continue;
     for (let j = pieceCoord.j - 2; j < pieceCoord.j + 3; j++) {
@@ -255,33 +255,29 @@ function getAllPossibleCoordsKnight(pieceCoord) {
       if (Math.abs(i - pieceCoord.i) + Math.abs(j - pieceCoord.j) !== 3) {
         continue;
       }
-      var coord = { i, j };
+      const coord = { i, j };
       if (!isEmptyCell(coord)) continue;
       res.push(coord);
     }
   }
 
-  console.log(res);
-
   return res;
 }
 
 function getAllPossibleCoordsKing(pieceCoord) {
-  var res = [];
+  const res = [];
   // Checking available sqaures around the king
   for (let i = pieceCoord.i - 1; i < pieceCoord.i + 2; i++) {
     if (i < 0 || i === 8) continue;
     for (let j = pieceCoord.j - 1; j < pieceCoord.j + 2; j++) {
       if (j < 0 || j === 8 || (i === pieceCoord.i && j === pieceCoord.j))
         continue;
-      var coord = { i, j };
+      const coord = { i, j };
 
       if (!isEmptyCell(coord)) continue;
       res.push(coord);
     }
   }
-  console.log(res);
-
   return res;
 }
 
